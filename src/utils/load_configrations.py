@@ -7,13 +7,10 @@ Load Configrations from ini file
 import os
 import configparser
 
-def load_configrations(path):
+def load_configrations(path, key='DEFAULT'):
     parser = configparser.ConfigParser()
     parser.read(path, encoding='utf-8')
     
-    items = parser.items('DEFAULT')
+    items = parser.items(key)
 
-    username = items[0][1]
-    password = items[1][1]
-
-    return username, password
+    return items[0][1], items[1][1]
