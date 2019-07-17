@@ -10,5 +10,5 @@ pip install -r requirements.txt # Install denpendencies
 
 ## 计划任务
 ```bash
-*/1 * * * * /root/dnspod_ddns.sh &> /home/lolimay/Logs/
+*/1 * * * * /root/dnspod_ddns.sh &> /home/lolimay/Logs/dnspod_ahucv_ddns.txt
 ```
