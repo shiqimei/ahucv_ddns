@@ -3,7 +3,7 @@ from utils.post import post
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
-from re import match, MULTILINE
+from re import MULTILINE, findall
 from datetime import datetime
 from json import loads, loads
 
@@ -15,6 +15,7 @@ dnspod_config_path = './dnspod.ini'
 chrome_driver_path = './chromedriver'
 username, password = load_configrations(config_path)
 dnspod_id, dnspod_token = load_configrations(dnspod_config_path)
+ip = ''
 ip_regex = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 need_update = False
 update_result = ''
@@ -49,8 +50,10 @@ logged_page = browser.page_source
 
 # fetch current IP
 try:
-    ip = re.findall(ip_regex, logged_page, MULTILINE)[0]
+    ip = findall(ip_regex, logged_page, MULTILINE)[0]
+    get_current_ip_time = datetime.now()
 except:
+    print('[ERROR] IP is not valid.')
     exit()
 
 header = {
@@ -71,6 +74,7 @@ dnspod_payload = {
 res = post(record_list_url, data=dnspod_payload, headers=header)
 record_id = loads(res.text)['records'][0]['id']
 last_ip = loads(res.text)['records'][0]['value']
+get_last_ip_time = datetime.now()
 
 dnspod_update_payload = {
     **dnspod_payload,
@@ -87,8 +91,7 @@ if ip != last_ip:
 
 # Print results
 print(f'''
-{ datetime.now() }
-Current IP: { ip }
-Last IP: { last_ip }
-{ update_result if need_update else "No Need To Update" }
+[{ get_current_ip_time }] Current IP: { ip }
+[{ get_last_ip_time }] Last IP: { last_ip }
+[{ datetime.now() }] { update_result if need_update else "No Need To Update" }
 ''')
