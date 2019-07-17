@@ -48,7 +48,10 @@ browser.get(logged_url)
 logged_page = browser.page_source
 
 # fetch current IP
-ip = re.findall(ip_regex, logged_page, MULTILINE)[0]
+try:
+    ip = re.findall(ip_regex, logged_page, MULTILINE)[0]
+except:
+    exit()
 
 header = {
     'Content-type': 'application/x-www-form-urlencoded',
@@ -82,7 +85,7 @@ if ip != last_ip:
     res_code = json.loads(update_result.text)['status']['code']
     update_result = 'Success' if res_code else 'Failed'
 
-
+# Print results
 print(f'''
 Current IP: { ip }
 Last IP: { last_ip }
