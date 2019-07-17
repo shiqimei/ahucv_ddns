@@ -16,6 +16,8 @@ chrome_driver_path = './chromedriver'
 username, password = load_configrations(config_path)
 dnspod_id, dnspod_token = load_configrations(dnspod_config_path)
 ip_regex = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+need_update = False
+update_result = ''
 
 login_url = 'http://172.16.254.19:8080/Self/LoginAction.action'
 logged_url = 'http://172.16.254.19:8080/Self/nav_offLine'
@@ -48,8 +50,6 @@ logged_page = browser.page_source
 # fetch current IP
 ip = re.findall(ip_regex, logged_page, MULTILINE)[0]
 
-print(f'Current IP: { ip }')
-
 header = {
     'Content-type': 'application/x-www-form-urlencoded',
     'Accept': 'text/json',
@@ -69,8 +69,6 @@ res = post(record_list_url, data=dnspod_payload, headers=header)
 record_id = json.loads(res.text)['records'][0]['id']
 last_ip = json.loads(res.text)['records'][0]['value']
 
-print(f'Last IP: { last_ip }')
-
 dnspod_update_payload = {
     **dnspod_payload,
     'record_id': record_id,
@@ -78,10 +76,15 @@ dnspod_update_payload = {
     'value': ip
 }
 
-
-
 if ip != last_ip:
+    need_update = True
     update_result = post(dnspod_update_url, dnspod_update_payload, header)
-    print(json.dumps(json.loads(update_result.text), indent=4))
+    res_code = json.loads(update_result.text)['status']['code']
+    update_result = 'Success' if res_code else 'Failed'
 
-print('There is no need to update!')
+
+print(f'''
+Current IP: { ip }
+Last IP: { last_ip }
+{ update_result if need_update else "No Need To Update" }
+''')
