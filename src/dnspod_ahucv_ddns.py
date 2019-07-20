@@ -56,6 +56,9 @@ except:
     print('[ERROR] IP is not valid.')
     exit()
 
+# close all chrome instances
+browser.quit()
+
 header = {
     'Content-type': 'application/x-www-form-urlencoded',
     'Accept': 'text/json',
