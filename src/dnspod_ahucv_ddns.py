@@ -39,7 +39,7 @@ auth = {
 record_list_url = 'https://dnsapi.cn/Record.List'
 dnspod_update_url = 'https://dnsapi.cn/Record.Ddns'
 
-with Popen(['node', './tools/md5.js', auth['password']], stdout=PIPE) as proc:
+with Popen(['/home/lolimay/.nvm/versions/node/v12.6.0/bin/node', './tools/md5.js', auth['password']], stdout=PIPE) as proc:
     md5 = json.loads(proc.stdout.read())
     auth['password'] = md5['password']
 
