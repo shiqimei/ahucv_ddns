@@ -173,4 +173,8 @@ function calcMD5(str)
   return rhex(a) + rhex(b) + rhex(c) + rhex(d);
 }
 
-module.exports = calcMD5;
+if (process.argv.length < 3) {
+  process.exit();
+} else {
+  console.log(JSON.stringify({ password: calcMD5(process.argv[2]) }));
+}
