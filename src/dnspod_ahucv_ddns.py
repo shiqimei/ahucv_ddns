@@ -5,7 +5,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from re import MULTILINE, findall
 from datetime import datetime
-from json import loads, loads
+from subprocess import PIPE, Popen
+import json
+import requests
 
 sub_domain = 's1'
 domain = 'lolimay.cn'
@@ -20,47 +22,41 @@ ip_regex = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 need_update = False
 update_result = ''
 
+url = 'http://172.16.254.19:8080/Self/nav_login'
 login_url = 'http://172.16.254.19:8080/Self/LoginAction.action'
+check_code_url = 'http://172.16.254.19:8080/Self/RandomCodeAction.action'
+refresh_account = 'http://172.16.254.19:8080/Self/refreshaccount'
 logged_url = 'http://172.16.254.19:8080/Self/nav_offLine'
+ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
+ip = ''
+auth = {
+    'account': username,
+    'password': password,
+    'code': '',
+    'checkcode': '',
+    'Submit': 'Login'
+}
 record_list_url = 'https://dnsapi.cn/Record.List'
 dnspod_update_url = 'https://dnsapi.cn/Record.Ddns'
 
-chrome_options = Options()
-chrome_options.add_argument("--headless")
-chrome_options.add_argument("--window-size=1024x1400")
+with Popen(['node', './tools/md5.js', auth['password']], stdout=PIPE) as proc:
+    md5 = json.loads(proc.stdout.read())
+    auth['password'] = md5['password']
 
-browser = webdriver.Chrome(
-    options=chrome_options,
-    executable_path=chrome_driver_path
-)
+    s = requests.session()
+    res = s.get(url)
+    s.get(check_code_url)
+    auth['checkcode'] = findall('checkcode="(\d{4})"', res.text, MULTILINE)[0]
+    s.post(login_url, params=auth)
+    logged_page = s.get(logged_url)
 
-login_page = browser.get(login_url)
-
-print(login_page)
-exit()
-
-username_input = browser.find_element_by_id('account')
-password_input = browser.find_element_by_id('pass')
-submit_button = browser.find_element_by_class_name('but')
-
-# fill form and submit it
-username_input.send_keys(username)
-password_input.send_keys(password)
-submit_button.click()
-
-browser.get(logged_url)
-logged_page = browser.page_source
-
-# fetch current IP
-try:
-    ip = findall(ip_regex, logged_page, MULTILINE)[0]
-    get_current_ip_time = datetime.now()
-except:
-    print('[ERROR] IP is not valid.')
-    exit()
-
-# close all chrome instances
-browser.quit()
+    # fetch current IP
+    try:
+        ip = findall(ip_regex, logged_page.text, MULTILINE)[0]
+        get_current_ip_time = datetime.now()
+    except:
+        print('[ERROR] IP is not valid.')
+        exit()
 
 header = {
     'Content-type': 'application/x-www-form-urlencoded',
@@ -78,8 +74,8 @@ dnspod_payload = {
 }
 
 res = post(record_list_url, data=dnspod_payload, headers=header)
-record_id = loads(res.text)['records'][0]['id']
-last_ip = loads(res.text)['records'][0]['value']
+record_id = json.loads(res.text)['records'][0]['id']
+last_ip = json.loads(res.text)['records'][0]['value']
 get_last_ip_time = datetime.now()
 
 dnspod_update_payload = {
@@ -94,7 +90,7 @@ print(ip)
 if ip != last_ip:
     need_update = True
     update_result = post(dnspod_update_url, dnspod_update_payload, header)
-    res_code = loads(update_result.text)['status']['code']
+    res_code = json.loads(update_result.text)['status']['code']
     update_result = 'Success' if res_code else 'Failed'
 
 # Print results
