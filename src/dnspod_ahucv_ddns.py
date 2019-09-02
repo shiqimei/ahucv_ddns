@@ -34,7 +34,10 @@ browser = webdriver.Chrome(
     executable_path=chrome_driver_path
 )
 
-browser.get(login_url)
+login_page = browser.get(login_url)
+
+print(login_page)
+exit()
 
 username_input = browser.find_element_by_id('account')
 password_input = browser.find_element_by_id('pass')
@@ -85,6 +88,8 @@ dnspod_update_payload = {
     'record_line_id': 0,
     'value': ip
 }
+
+print(ip)
 
 if ip != last_ip:
     need_update = True
