@@ -14,7 +14,6 @@ domain = 'lolimay.cn'
 
 config_path = './config.ini'
 dnspod_config_path = './dnspod.ini'
-chrome_driver_path = './chromedriver'
 username, password = load_configrations(config_path)
 dnspod_id, dnspod_token = load_configrations(dnspod_config_path)
 ip = ''
