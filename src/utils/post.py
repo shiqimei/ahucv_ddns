@@ -1,5 +1,5 @@
 '''
-a simple HTTP Post method
+A simple HTTP Post method
 '''
 
 import requests
