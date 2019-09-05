@@ -38,24 +38,23 @@ auth = {
 record_list_url = 'https://dnsapi.cn/Record.List'
 dnspod_update_url = 'https://dnsapi.cn/Record.Ddns'
 
-with Popen(['node', './tools/md5.js', auth['password']], stdout=PIPE) as proc:
-    md5 = json.loads(proc.stdout.read())
-    auth['password'] = md5['password']
+md5 = json.loads(proc.stdout.read())
+auth['password'] = md5['password']
 
-    s = requests.session()
-    res = s.get(url)
-    s.get(check_code_url)
-    auth['checkcode'] = findall('checkcode="(\d{4})"', res.text, MULTILINE)[0]
-    s.post(login_url, params=auth)
-    logged_page = s.get(logged_url)
+s = requests.session()
+res = s.get(url)
+s.get(check_code_url)
+auth['checkcode'] = findall('checkcode="(\d{4})"', res.text, MULTILINE)[0]
+s.post(login_url, params=auth)
+logged_page = s.get(logged_url)
 
-    # fetch current IP
-    try:
-        ip = findall(ip_regex, logged_page.text, MULTILINE)[0]
-        get_current_ip_time = datetime.now()
-    except:
-        print('[ERROR] IP is not valid.')
-        exit()
+# fetch current IP
+try:
+    ip = findall(ip_regex, logged_page.text, MULTILINE)[0]
+    get_current_ip_time = datetime.now()
+except:
+    print('[ERROR] IP is not valid.')
+    exit()
 
 header = {
     'Content-type': 'application/x-www-form-urlencoded',
