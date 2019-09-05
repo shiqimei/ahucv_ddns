@@ -1,5 +1,6 @@
 from utils.load_configrations import load_configrations
 from utils.post import post
+from utils.md5 import md5_encode
 from re import MULTILINE, findall
 from datetime import datetime
 import json
@@ -26,16 +27,13 @@ ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
 ip = ''
 auth = {
     'account': username,
-    'password': password,
+    'password': md5_encode(password),
     'code': '',
     'checkcode': '',
     'Submit': 'Login'
 }
 record_list_url = 'https://dnsapi.cn/Record.List'
 dnspod_update_url = 'https://dnsapi.cn/Record.Ddns'
-
-md5 = json.loads(proc.stdout.read())
-auth['password'] = md5['password']
 
 s = requests.session()
 res = s.get(url)
