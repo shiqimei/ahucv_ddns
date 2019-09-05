@@ -6,17 +6,15 @@ from re import MULTILINE, findall
 from datetime import datetime
 import json
 import requests
-from utils.load_configrations import load_configrations
-from utils.post import post
-from utils.md5 import md5_encode
+from utils import config, md5, http
 
 sub_domain = 's1'
 domain = 'lolimay.cn'
 
 config_path = './config.ini'
 dnspod_config_path = './dnspod.ini'
-username, password = load_configrations(config_path)
-dnspod_id, dnspod_token = load_configrations(dnspod_config_path)
+username, password = config.load_configrations(config_path)
+dnspod_id, dnspod_token = config.load_configrations(dnspod_config_path)
 ip = ''
 ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
 need_update = False
@@ -30,7 +28,7 @@ ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
 ip = ''
 auth = {
     'account': username,
-    'password': md5_encode(password),
+    'password': md5.encode(password),
     'code': '',
     'checkcode': '',
     'Submit': 'Login'
@@ -72,7 +70,7 @@ dnspod_payload = {
     'sub_domain': sub_domain
 }
 
-res = post(record_list_url, data=dnspod_payload, headers=header)
+res = http.post(record_list_url, data=dnspod_payload, headers=header)
 record_id = json.loads(res.text)['records'][0]['id']
 last_ip = json.loads(res.text)['records'][0]['value']
 get_last_ip_time = datetime.now()
@@ -86,7 +84,7 @@ dnspod_update_payload = {
 
 if ip != last_ip:
     need_update = True
-    update_result = post(dnspod_update_url, dnspod_update_payload, header)
+    update_result = http.post(dnspod_update_url, dnspod_update_payload, header)
     res_code = json.loads(update_result.text)['status']['code']
     update_result = 'Success' if res_code else 'Failed'
 
