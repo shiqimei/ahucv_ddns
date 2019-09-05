@@ -25,7 +25,6 @@ update_result = ''
 url = 'http://172.16.254.19:8080/Self/nav_login'
 login_url = 'http://172.16.254.19:8080/Self/LoginAction.action'
 check_code_url = 'http://172.16.254.19:8080/Self/RandomCodeAction.action'
-refresh_account = 'http://172.16.254.19:8080/Self/refreshaccount'
 logged_url = 'http://172.16.254.19:8080/Self/nav_offLine'
 ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
 ip = ''
@@ -84,8 +83,6 @@ dnspod_update_payload = {
     'record_line_id': 0,
     'value': ip
 }
-
-print(ip)
 
 if ip != last_ip:
     need_update = True
