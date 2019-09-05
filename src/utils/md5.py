@@ -4,7 +4,7 @@ md5 utilities
 
 import hashlib
 
-def md5_encode(raw_string):
+def encode(raw_string):
     '''
     Encode a string to md5
     '''
