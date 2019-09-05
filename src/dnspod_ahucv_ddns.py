@@ -18,7 +18,7 @@ dnspod_config_path = './dnspod.ini'
 username, password = load_configrations(config_path)
 dnspod_id, dnspod_token = load_configrations(dnspod_config_path)
 ip = ''
-ip_regex = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
 need_update = False
 update_result = ''
 
@@ -42,7 +42,12 @@ dnspod_update_url = 'https://dnsapi.cn/Record.Ddns'
 s = requests.session()
 res = s.get(url)
 s.get(check_code_url)
-auth['checkcode'] = findall('checkcode="(\d{4})"', res.text, MULTILINE)[0]
+
+try:
+    auth['checkcode'] = findall(r'checkcode="(\d{4})"', res.text, MULTILINE)[0]
+except IndexError:
+    exit()
+
 s.post(login_url, params=auth)
 logged_page = s.get(logged_url)
 
@@ -50,8 +55,7 @@ logged_page = s.get(logged_url)
 try:
     ip = findall(ip_regex, logged_page.text, MULTILINE)[0]
     get_current_ip_time = datetime.now()
-except:
-    print('[ERROR] IP is not valid.')
+except IndexError:
     exit()
 
 header = {
