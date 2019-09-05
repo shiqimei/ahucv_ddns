@@ -2,15 +2,13 @@
 Load Configrations from ini file
 '''
 
-import configparser
+import configparser as _configparser
 
-def load_configrations(path, key='DEFAULT'):
+def load_configrations(path, section='DEFAULT'):
     '''
     load configrations by specifying config file path and the section
     '''
-    parser = configparser.ConfigParser()
+    parser = _configparser.ConfigParser()
     parser.read(path, encoding='utf-8')
 
-    items = parser.items(key)
-
-    return items[0][1], items[1][1]
+    return tuple(dict(parser.items(section)).values())
