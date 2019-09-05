@@ -8,13 +8,12 @@ import json
 import requests
 from utils import config, md5, http
 
-sub_domain = 's1'
-domain = 'lolimay.cn'
-
 config_path = './config.ini'
-dnspod_config_path = './dnspod.ini'
-username, password = config.load_configrations(config_path)
-dnspod_id, dnspod_token = config.load_configrations(dnspod_config_path)
+
+username, password = config.load(config_path, 'AUTH')
+dnspod_id, dnspod_token = config.load(config_path, 'DNSPOD')
+sub_domain, domain = config.load(config_path, 'DOMAIN')
+
 ip = ''
 ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
 need_update = False
