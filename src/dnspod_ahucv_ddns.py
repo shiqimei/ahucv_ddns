@@ -1,11 +1,7 @@
 from utils.load_configrations import load_configrations
 from utils.post import post
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.keys import Keys
 from re import MULTILINE, findall
 from datetime import datetime
-from subprocess import PIPE, Popen
 import json
 import requests
 
