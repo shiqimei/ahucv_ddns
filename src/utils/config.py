@@ -4,7 +4,7 @@ Load Configrations from ini file
 
 import configparser as _configparser
 
-def load_configrations(path, section='DEFAULT'):
+def load(path, section):
     '''
     load configrations by specifying config file path and the section
     '''
