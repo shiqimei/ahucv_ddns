@@ -1,10 +1,14 @@
-from utils.load_configrations import load_configrations
-from utils.post import post
-from utils.md5 import md5_encode
+'''
+AHUCV server dynamic DNS updater
+'''
+
 from re import MULTILINE, findall
 from datetime import datetime
 import json
 import requests
+from utils.load_configrations import load_configrations
+from utils.post import post
+from utils.md5 import md5_encode
 
 sub_domain = 's1'
 domain = 'lolimay.cn'
