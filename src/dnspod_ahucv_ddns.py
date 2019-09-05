@@ -23,8 +23,6 @@ url = 'http://172.16.254.19:8080/Self/nav_login'
 login_url = 'http://172.16.254.19:8080/Self/LoginAction.action'
 check_code_url = 'http://172.16.254.19:8080/Self/RandomCodeAction.action'
 logged_url = 'http://172.16.254.19:8080/Self/nav_offLine'
-ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
-ip = ''
 auth = {
     'account': username,
     'password': md5.encode(password),
