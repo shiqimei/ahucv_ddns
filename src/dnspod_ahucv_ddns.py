@@ -6,58 +6,21 @@ from re import MULTILINE, findall
 from datetime import datetime
 import json
 import requests
-from utils import config, md5, http
+from utils import config, simple_http as http, DrCOM
 
 APP_VERSION = '0.4.0'
 CONFIG_PATH = './config.ini'
+record_list_url = 'https://dnsapi.cn/Record.List'
+dnspod_update_url = 'https://dnsapi.cn/Record.Ddns'
 
 username, password = config.load(CONFIG_PATH, 'AUTH')
 dnspod_id, dnspod_token = config.load(CONFIG_PATH, 'DNSPOD')
 sub_domain, domain = config.load(CONFIG_PATH, 'DOMAIN')
 mac_address, *_ = config.load(CONFIG_PATH, 'CLIENT')
 
-ip = ''
-ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
+ip = DrCOM.get_ip_by_mac_address(username, password, mac_address)
 need_update = False
 update_result = ''
-
-url = 'http://172.16.254.19:8080/Self/nav_login'
-login_url = 'http://172.16.254.19:8080/Self/LoginAction.action'
-check_code_url = 'http://172.16.254.19:8080/Self/RandomCodeAction.action'
-logged_url = 'http://172.16.254.19:8080/Self/nav_offLine'
-auth = {
-    'account': username,
-    'password': md5.encode(password),
-    'code': '',
-    'checkcode': '',
-    'Submit': 'Login'
-}
-record_list_url = 'https://dnsapi.cn/Record.List'
-dnspod_update_url = 'https://dnsapi.cn/Record.Ddns'
-
-s = requests.session()
-res = s.get(url)
-s.get(check_code_url)
-
-try:
-    auth['checkcode'] = findall(r'checkcode="(\d{4})"', res.text, MULTILINE)[0]
-except IndexError:
-    exit()
-
-s.post(login_url, params=auth)
-logged_page = s.get(logged_url)
-
-# Get the current IP
-try:
-    ip_list = findall(fr'<tr>[\s|\S]+?</tr>', logged_page.text)
-    for raw in ip_list:
-        matched_ip = findall(fr'({ ip_regex })[\s|\S]+?{ mac_address }', raw)
-        if matched_ip:
-            ip = matched_ip[0]
-    get_current_ip_time = datetime.now()
-except IndexError:
-    print(f'[{ datetime.now() }] Couldn\'t get the current IP successfully')
-    exit()
 
 header = {
     'Content-type': 'application/x-www-form-urlencoded',
@@ -86,7 +49,7 @@ dnspod_update_payload = {
     'value': ip
 }
 
-if ip != last_ip:
+if ip and ip != last_ip:
     need_update = True
     update_result = http.post(dnspod_update_url, dnspod_update_payload, header)
     res_code = json.loads(update_result.text)['status']['code']
@@ -94,7 +57,6 @@ if ip != last_ip:
 
 # Print results
 print(f'''
-[{ get_current_ip_time }] Current IP: { ip }
-[{ get_last_ip_time }] Last IP: { last_ip }
+[{ get_last_ip_time }] { ip } -> { last_ip }
 [{ datetime.now() }] { update_result if need_update else "No Need To Update" }
 ''')
