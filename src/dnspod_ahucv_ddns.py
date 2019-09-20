@@ -7,7 +7,7 @@ from datetime import datetime
 import requests
 from utils import config, DrCOM, DnsPod
 
-APP_VERSION = '0.4.0'
+APP_VERSION = '1.0.0'
 CONFIG_PATH = './config.ini'
 
 username, password = config.load(CONFIG_PATH, 'AUTH')
