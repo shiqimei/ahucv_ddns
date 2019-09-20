@@ -13,6 +13,7 @@ config_path = './config.ini'
 username, password = config.load(config_path, 'AUTH')
 dnspod_id, dnspod_token = config.load(config_path, 'DNSPOD')
 sub_domain, domain = config.load(config_path, 'DOMAIN')
+mac_address, *_ = config.load(config_path, 'CLIENT')
 
 ip = ''
 ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
@@ -45,11 +46,16 @@ except IndexError:
 s.post(login_url, params=auth)
 logged_page = s.get(logged_url)
 
-# fetch current IP
+# Get the current IP
 try:
-    ip = findall(ip_regex, logged_page.text, MULTILINE)[0]
+    ip_list = findall(fr'<tr>[\s|\S]+?</tr>', logged_page.text)
+    for raw in ip_list:
+        matched_ip = findall(fr'({ ip_regex })[\s|\S]+?{ mac_address }', raw)
+        if matched_ip:
+            ip = matched_ip[0]
     get_current_ip_time = datetime.now()
 except IndexError:
+    print(f'[{ datetime.now() }] Couldn\'t get the current IP successfully')
     exit()
 
 header = {
