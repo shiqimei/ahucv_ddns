@@ -5,8 +5,7 @@ AHUCV server dynamic DNS updater
 from re import MULTILINE, findall
 from datetime import datetime
 import requests
-from utils import config, DrCOM
-from DnsPod import DnsPodClient
+from utils import config, DrCOM, DnsPod
 
 APP_VERSION = '0.4.0'
 CONFIG_PATH = './config.ini'
@@ -16,7 +15,7 @@ dnspod_id, dnspod_token, author_email = config.load(CONFIG_PATH, 'DNSPOD')
 sub_domain, domain = config.load(CONFIG_PATH, 'DOMAIN')
 mac_address, *_ = config.load(CONFIG_PATH, 'CLIENT')
 
-dnspod_client = DnsPodClient(dnspod_id, dnspod_token, author_email, APP_VERSION)
+dnspod_client = DnsPod.DnsPodClient(dnspod_id, dnspod_token, author_email, APP_VERSION)
 
 need_update = False
 update_result = ''
