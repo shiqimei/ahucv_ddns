@@ -8,12 +8,13 @@ import json
 import requests
 from utils import config, md5, http
 
-config_path = './config.ini'
+APP_VERSION = '0.4.0'
+CONFIG_PATH = './config.ini'
 
-username, password = config.load(config_path, 'AUTH')
-dnspod_id, dnspod_token = config.load(config_path, 'DNSPOD')
-sub_domain, domain = config.load(config_path, 'DOMAIN')
-mac_address, *_ = config.load(config_path, 'CLIENT')
+username, password = config.load(CONFIG_PATH, 'AUTH')
+dnspod_id, dnspod_token = config.load(CONFIG_PATH, 'DNSPOD')
+sub_domain, domain = config.load(CONFIG_PATH, 'DOMAIN')
+mac_address, *_ = config.load(CONFIG_PATH, 'CLIENT')
 
 ip = ''
 ip_regex = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
@@ -61,7 +62,7 @@ except IndexError:
 header = {
     'Content-type': 'application/x-www-form-urlencoded',
     'Accept': 'text/json',
-    'User-Agent': 'ahucv_ddns/0.1.0 (lolimay@lolimay.cn)'
+    'User-Agent': f'ahucv_ddns/{ APP_VERSION } (lolimay@lolimay.cn)'
 }
 
 dnspod_payload = {
